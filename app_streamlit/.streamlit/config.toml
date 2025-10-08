@@ -1,0 +1,7 @@
+[server]
+port = 5173
+address = "0.0.0.0"
+fileWatcherType = "auto"
+
+[theme]
+base = "light"
