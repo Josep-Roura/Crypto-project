@@ -1,24 +1,44 @@
-from argon2.low_level import hash_secret_raw, Type
+import os
+from typing import Optional, Tuple
 
-def derive_kek(
-    passphrase: str,
-    salt: bytes,
-    *,
-    t: int = 3,
-    m: int = 64 * 1024,  # 64 MiB para dev; en prod puedes subir a 256*1024
-    p: int = 1,
-    outlen: int = 32,
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from core.models import AesGcmResult
+
+
+def encrypt_aes_gcm(plaintext: bytes) -> AesGcmResult:
+    """
+    Cifra con una DEK aleatoria (32B) y devuelve struct (ciphertext, nonce, tag).
+    Útil para pruebas de UI. Para producción, usa las funciones con clave explícita.
+    """
+    dek = os.urandom(32)   # 256-bit
+    nonce = os.urandom(12) # 96-bit
+    aes = AESGCM(dek)
+    ct_full = aes.encrypt(nonce, plaintext, associated_data=None)
+    tag = ct_full[-16:]            # 128-bit
+    ciphertext = ct_full[:-16]
+    return AesGcmResult(ciphertext=ciphertext, nonce=nonce, tag=tag)
+
+
+def aes_gcm_encrypt_with_key(
+    key: bytes, plaintext: bytes, aad: Optional[bytes] = None
+) -> Tuple[bytes, bytes, bytes]:
+    """
+    Cifra con AES-GCM y clave proporcionada.
+    Devuelve (ciphertext_sin_tag, nonce, tag).
+    """
+    nonce = os.urandom(12)  # 96-bit
+    aes = AESGCM(key)
+    ct_full = aes.encrypt(nonce, plaintext, aad)
+    tag = ct_full[-16:]     # 128-bit
+    ciphertext = ct_full[:-16]
+    return ciphertext, nonce, tag
+
+
+def aes_gcm_decrypt_with_key(
+    key: bytes, nonce: bytes, ciphertext: bytes, tag: bytes, aad: Optional[bytes] = None
 ) -> bytes:
     """
-    Deriva KEK (Key Encryption Key) con Argon2id.
-    m es en KiB (64*1024 = 64 MiB). outlen en bytes (32 => 256 bits).
+    Descifra con AES-GCM y clave proporcionada.
     """
-    return hash_secret_raw(
-        passphrase.encode("utf-8"),
-        salt,
-        time_cost=t,
-        memory_cost=m,
-        parallelism=p,
-        hash_len=outlen,
-        type=Type.ID,
-    )
+    aes = AESGCM(key)
+    return aes.decrypt(nonce, ciphertext + tag, aad)

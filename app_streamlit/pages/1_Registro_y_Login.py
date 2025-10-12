@@ -1,6 +1,3 @@
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-
 import streamlit as st
 from core import auth
 
@@ -15,7 +12,7 @@ with tab_reg:
         ok, msg, dbg = auth.register_user(email, passphrase)
         if ok:
             st.success(msg)
-            st.code(dbg)  # logs para la memoria (algoritmos y tamaños)
+            st.code(dbg)
         else:
             st.error(msg)
 
@@ -26,7 +23,6 @@ with tab_log:
         ok, msg, ctx, dbg = auth.login(email_l, passphrase_l)
         if ok:
             st.session_state["user"] = email_l
-            # Guardamos la user_secret descifrada para siguientes páginas
             st.session_state["user_ctx"] = {"user_secret": ctx["user_secret"]}
             st.success(msg)
             st.code(dbg)
