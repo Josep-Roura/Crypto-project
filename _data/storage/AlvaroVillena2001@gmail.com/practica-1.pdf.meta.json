@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "original_filename": "practica-1.pdf",
+  "stored_as": "practica-1.pdf.enc",
+  "algo": "AES-GCM-256",
+  "ciphertext": {
+    "nonce": "pPoR2Ltffyjjn3hl",
+    "tag": "YgwtXzRO4lErXaE0-8_Q_g",
+    "length": 213732
+  },
+  "dek_wrapped": {
+    "nonce": "KriqDZ6VtZeTeqO_",
+    "tag": "9fKr7C5A0KDYw7EWlB4vyw",
+    "ct": "SIsniuQNR1eUc8_9uHAcan6vZLYH0cMNjQ8zJwRloEM"
+  },
+  "manifest": {
+    "filename": "practica-1.pdf",
+    "size": 213732,
+    "algo": "AES-GCM-256",
+    "content_hash": "sha256:c6444a6ad27770fa0e41914badfde01d65dda2f55736455dbffde8850be70ed0"
+  },
+  "signature": {
+    "alg": "Ed25519-SHA256",
+    "cert_pem": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJSVENCK0tBREFnRUNBaFE1clhtNEdBNjdIT2IreUs0Tm5XbXJyMDNZa0RBRkJnTXJaWEF3SmpFa01DSUcKQTFVRUF3d2JRM0o1Y0hSdlJISnBkbVVnU1c1MFpYSnRaV1JwWVhSbElFTkJNQjRYRFRJMU1UQXlOakl3TURVMQpORm9YRFRJMk1UQXlOakl3TURZMU5Gb3dKakVrTUNJR0ExVUVBd3diUVd4MllYSnZWbWxzYkdWdVlUSXdNREZBCloyMWhhV3d1WTI5dE1Db3dCUVlESzJWd0F5RUFYQ2t0a1hBK2xqMEMycmtKYUhZVmV4NWxPTyt2UGhnRXlDckoKbVZoTzk0cWpPREEyTUF3R0ExVWRFd0VCL3dRQ01BQXdKZ1lEVlIwUkJCOHdIWUViUVd4MllYSnZWbWxzYkdWdQpZVEl3TURGQVoyMWhhV3d1WTI5dE1BVUdBeXRsY0FOQkFBTnJVSTRyVlFlbTZaWllCcDJEWklOcytoOHFacEtlCmNmUmhkME4xbTBJSUh5emVFVlBHWi9WZFR5OGxmR2hMMW9QL2QrS21QeUdTS09YTXRpWU1qQWc9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K",
+    "signature": "8RW1w9NDerN-k45HWFCxSSAyTyfgS8dYWYPlC8vdcDbn--rzxgw6tGsowm-0eSuojrPv7OVBszh_ELyrpEEvCA"
+  }
+}
