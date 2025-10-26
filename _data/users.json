@@ -33,6 +33,63 @@
         "ct": "tJZsALydhnY9FQdevo6Y6froTSM-RVg4xV51_Wino_A"
       },
       "created_at": "2025-10-08T10:37:18.153686Z"
+    },
+    "franjuradobaste@prueba.com": {
+      "salt": "ZWDaivRHeWE24AI0Cfls4w",
+      "pwd_hash": "$argon2id$v=19$m=65536,t=3,p=1$uk0+9FX1oJN2hsF0mGvEMw$Lfe2GA6eDIGH+bWMxcbLKVsWhq3oVbvolFc6X89R0AE",
+      "kdf_params": {
+        "t": 3,
+        "m": 65536,
+        "p": 1,
+        "outlen": 32,
+        "alg": "argon2id"
+      },
+      "enc_user_secret": {
+        "nonce": "AC8BUoOQ1KUXtQDP",
+        "tag": "3YKIMHtrAXsPo1w8y4Elkg",
+        "ct": "gYSh2-pTPWakKhXtybnJjdHRE3mlDXdKT5hOKdxea_I"
+      },
+      "created_at": "2025-10-26T12:47:58.566233Z",
+      "sign_pubkey_pem": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQW14SEIwWmd0QUt2cENUeDROOVdQNTkvZ05JYk1YaE9NYlZqQUs4NE1yZm89Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo",
+      "enc_sign_privkey": {
+        "nonce": "eVuV8V6-UneigbXA",
+        "tag": "pMswroDQtCGMHpSOA9lSmg",
+        "ct": "F6qmDQfDT9MP-uX9pGz6BqnRZN-rXtIb1D4KgfT8AavO2Hx3ibhwWZnmowoU4svpv21g3bZpF2NxaQHlO9EXDfL0PFTKmVFmO2Hh4oN7Pc4i2Nrhez3xrvAI8u1ozKoymwTncEKVZgdJPw624MIOZ48OAQ2-hR4"
+      }
+    },
+    "franjuradobaste@dam.com": {
+      "salt": "Qs1h6KqCx6b8FcZ_BtI_sQ",
+      "pwd_hash": "$argon2id$v=19$m=65536,t=3,p=1$BSkAxlT0BIIZAaCbAc2XrA$EZk4a7M1qD5DwM8wmcz9SHOVn4WvYX8gllnBTODD6XE",
+      "kdf_params": {
+        "t": 3,
+        "m": 65536,
+        "p": 1,
+        "outlen": 32,
+        "alg": "argon2id"
+      },
+      "enc_user_secret": {
+        "nonce": "GO1YQN8UIBq8gw9x",
+        "tag": "AGnJgEiAoLW10eqtXjqWnA",
+        "ct": "BwC14DRozlzPqXR9E76fSoans1AZEbuFQQhTKTS0ypQ"
+      },
+      "created_at": "2025-10-26T12:55:13.825995Z"
+    },
+    "franjuradobaste@bot.com": {
+      "salt": "A8_4rInVKnfr6ayuQBVYYw",
+      "pwd_hash": "$argon2id$v=19$m=65536,t=3,p=1$CTgBSyTxobA41SdR3OkCLg$foxxVt1wwEAl5o1j6KJPXbAVUucs2I1k5eG2yoywic0",
+      "kdf_params": {
+        "t": 3,
+        "m": 65536,
+        "p": 1,
+        "outlen": 32,
+        "alg": "argon2id"
+      },
+      "enc_user_secret": {
+        "nonce": "zPVheUcnberLnl1G",
+        "tag": "HtM7UpARcj-eHyC9QRejww",
+        "ct": "MqxTtym2sdjQMrHNhx8PV08cAFi2TAHLpPqnj_0jxfw"
+      },
+      "created_at": "2025-10-26T12:56:11.630069Z"
     }
   }
 }

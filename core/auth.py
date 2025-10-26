@@ -1,3 +1,4 @@
+# auth.py
 import os
 import json
 import base64
@@ -12,7 +13,7 @@ from core.crypto_sym import (
 )
 
 # ===== Config =====
-DATA_DIR = os.getenv("STORAGE_PATH", "./_data")
+DATA_DIR = os.getenv("STORAGE_PATH", "./_data")        #Estas líneas establecen donde se va a guardar el json, en concreto users.json
 USERS_PATH = os.path.join(DATA_DIR, "users.json")
 os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -75,6 +76,7 @@ def register_user(email: str, passphrase: str) -> Tuple[bool, str, str]:
         p=KDF_PARAMS["p"],
         outlen=KDF_PARAMS["outlen"],
     )
+
     # Generamos y ciframos user_secret
     user_secret = os.urandom(32)  # 256-bit
     ct, nonce, tag = aes_gcm_encrypt_with_key(kek, user_secret)
@@ -128,6 +130,7 @@ def login(email: str, passphrase: str) -> Tuple[bool, str, Dict[str, Any], str]:
     nonce = _unb64u(enc["nonce"])
     tag = _unb64u(enc["tag"])
     ct = _unb64u(enc["ct"])
+
     try:
         user_secret = aes_gcm_decrypt_with_key(kek, nonce, ct, tag)
     except Exception:
@@ -139,3 +142,6 @@ def login(email: str, passphrase: str) -> Tuple[bool, str, Dict[str, Any], str]:
         f"[LOGIN] AES-GCM-256 nonce=96-bit tag=128-bit user_secret OK ({len(user_secret)*8} bits)"
     )
     return True, "Sesión iniciada.", ctx, debug
+
+
+    

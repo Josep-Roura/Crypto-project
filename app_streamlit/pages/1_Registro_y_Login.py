@@ -22,8 +22,11 @@ with tab_log:
     if st.button("Iniciar sesión"):
         ok, msg, ctx, dbg = auth.login(email_l, passphrase_l)
         if ok:
-            st.session_state["user"] = email_l
-            st.session_state["user_ctx"] = {"user_secret": ctx["user_secret"]}
+            
+            st.session_state["user_ctx"] = {
+                "email": email_l,
+                "user_secret": ctx["user_secret"],
+}
             st.success(msg)
             st.code(dbg)
         else:
