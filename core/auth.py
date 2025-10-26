@@ -4,7 +4,7 @@ import json
 import base64
 import datetime as dt
 from typing import Tuple, Dict, Any
-
+from core.password_policy import check_passphrase_strength
 from argon2 import PasswordHasher, exceptions as argon_exc
 from core.crypto_kdf import derive_kek
 from core.crypto_sym import (
@@ -51,6 +51,7 @@ def _save_db(db: Dict[str, Any]) -> None:
 def register_user(email: str, passphrase: str) -> Tuple[bool, str, str]:
     """
     Crea usuario:
+      - Verifica robustez de la passphrase (política de seguridad).
       - Guarda hash Argon2id de la pass (PH.hash).
       - Deriva KEK (Argon2id raw) con salt aleatoria.
       - Genera user_secret (32B) y la cifra con AES-GCM(KEK).
@@ -59,6 +60,13 @@ def register_user(email: str, passphrase: str) -> Tuple[bool, str, str]:
     """
     if not email or not passphrase:
         return False, "Email y passphrase son obligatorios.", ""
+
+    # === Política de passphrase robusta (server-side) ===
+    ok_pw, reasons, score = check_passphrase_strength(passphrase, email=email)
+    if not ok_pw:
+        msg = "La passphrase no es suficientemente robusta:\n- " + "\n- ".join(reasons)
+        dbg = f"[POLICY] score={score}/100"
+        return False, msg, dbg
 
     db = _load_db()
     if email in db["users"]:
@@ -95,6 +103,7 @@ def register_user(email: str, passphrase: str) -> Tuple[bool, str, str]:
     _save_db(db)
 
     debug = (
+        f"[REGISTER] Passphrase score={score}/100 (OK)\n"
         f"[REGISTER] Argon2id t={KDF_PARAMS['t']} m={KDF_PARAMS['m']}KiB p={KDF_PARAMS['p']} → KEK=256-bit\n"
         f"[REGISTER] AES-GCM-256 nonce=96-bit tag=128-bit user_secret=256-bit"
     )
@@ -142,6 +151,3 @@ def login(email: str, passphrase: str) -> Tuple[bool, str, Dict[str, Any], str]:
         f"[LOGIN] AES-GCM-256 nonce=96-bit tag=128-bit user_secret OK ({len(user_secret)*8} bits)"
     )
     return True, "Sesión iniciada.", ctx, debug
-
-
-    

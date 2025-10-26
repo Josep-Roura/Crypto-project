@@ -47,6 +47,23 @@
         "ct": "ZH3tyXRLq-9V5aZBrUx6sqhIGPihJvAgQZf7kW8Rs6upchE00xHJad2YRbLLz73fjQJjqWhMyuNMEs6Srez28cnRAj1L81PfMHX67Gfmq9BoY0o-i2JNXQxoBFiTM1eUZzJfr0Yw3sRsPljsBxzJ_sqwnM0V8RQ"
       },
       "sign_cert_pem": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJNVENCNUtBREFnRUNBaFJ0d084R0JqNkFKUVVYanMzck1sWlBqUnlxTGpBRkJnTXJaWEF3SmpFa01DSUcKQTFVRUF3d2JRM0o1Y0hSdlJISnBkbVVnU1c1MFpYSnRaV1JwWVhSbElFTkJNQjRYRFRJMU1UQXlOakUxTlRregpORm9YRFRJMk1UQXlOakUyTURBek5Gb3dIREVhTUJnR0ExVUVBd3dSY205aVpYSjBiMEJuYldGcGJDNWpiMjB3CktqQUZCZ01yWlhBRElRQkFIVmtQTXhpbUUvYmt1SkFMN1I3RVAvOTM0OFpLNU9scXppcTdzMS9HL3FNdU1Dd3cKREFZRFZSMFRBUUgvQkFJd0FEQWNCZ05WSFJFRUZUQVRnUkZ5YjJKbGNuUnZRR2R0WVdsc0xtTnZiVEFGQmdNcgpaWEFEUVFCY2RyZ1l4TWR1ZTRLQUVXS1c1MVQ3cFM2SDF3YUt6TTc2ZkhwYkRuR3YzcWJKajdKTkorOVNDRnpPClBsWTFuZUVCLzJ5OVR4elBrZnZRb2JHWjNiZ0kKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo"
+    },
+    "carlos@gmail.com": {
+      "salt": "GF7sW2a7eRwzwbfvSQ63dw",
+      "pwd_hash": "$argon2id$v=19$m=65536,t=3,p=1$+BiIaKvfDChNmelqabRZUQ$kAiwCDMcWve1tHq7HZ9dR383koZyVQ/BmB1G81UEBXE",
+      "kdf_params": {
+        "t": 3,
+        "m": 65536,
+        "p": 1,
+        "outlen": 32,
+        "alg": "argon2id"
+      },
+      "enc_user_secret": {
+        "nonce": "uwW44nc-QbLDQxgy",
+        "tag": "nG7bCRIJKQ4QXFcqf-43GQ",
+        "ct": "9UZ7_xm5P3pMFv3cpsod3q0BB6eEqE5iwL-BLDssNNE"
+      },
+      "created_at": "2025-10-26T16:15:16.663107Z"
     }
   }
 }

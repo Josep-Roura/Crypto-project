@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "original_filename": "Enunciado_practica_25_26.docx.pdf",
+  "stored_as": "Enunciado_practica_25_26.docx.pdf.enc",
+  "algo": "AES-GCM-256",
+  "ciphertext": {
+    "nonce": "CVnE1WxtPfpEi1I2",
+    "tag": "0ozv1HX_o3P8BLqgDI9FxA",
+    "length": 271025
+  },
+  "dek_wrapped": {
+    "nonce": "3Aw6d-rfMahFvtmQ",
+    "tag": "1ZZqh3cu42F-Den1M-HYUA",
+    "ct": "cJ3hyE-Zab5--Bsr2P48Ti5u5FIZHn9ASNBU736Ymuo"
+  },
+  "manifest": {
+    "filename": "Enunciado_practica_25_26.docx.pdf",
+    "size": 271025,
+    "algo": "AES-GCM-256",
+    "content_hash": "sha256:f07ca3b05823ab1840949a1d6b3d7694209830967bf27314b00492bc16e576d9"
+  },
+  "signature": {
+    "alg": "Ed25519-SHA256",
+    "cert_pem": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJRekNCOXFBREFnRUNBaFJmM3k4SkhERDhIWWo3UUxVbFJjRnk5aHprS0RBRkJnTXJaWEF3SmpFa01DSUcKQTFVRUF3d2JRM0o1Y0hSdlJISnBkbVVnU1c1MFpYSnRaV1JwWVhSbElFTkJNQjRYRFRJMU1UQXlOakUxTXpreApNVm9YRFRJMk1UQXlOakUxTkRBeE1Wb3dKVEVqTUNFR0ExVUVBd3dhWm5KaGJtcDFjbUZrYjJKaGMzUmxRSEJ5CmRXVmlZUzVqYjIwd0tqQUZCZ01yWlhBRElRQThnUC9wWTlLZFQ5MzJYS29QQTRsMEdDUHIya0hCQ3FzQjc3RVAKWkoxZnNhTTNNRFV3REFZRFZSMFRBUUgvQkFJd0FEQWxCZ05WSFJFRUhqQWNnUnBtY21GdWFuVnlZV1J2WW1GegpkR1ZBY0hKMVpXSmhMbU52YlRBRkJnTXJaWEFEUVFDVml2bGcwYjNQV1F2aWNQN3ZYTlRQVTNwN0hqZWhlemN2Cm5PejNXdXVxVHFIY0pWTlN6VmYweG5YODgvVzAxaHlKM1RRNzlCaDVpN0ZoUWprWm1UNFAKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo",
+    "signature": "nmUsw_yuRw2ETI-Zvc89tjNCfwAarUwIC8gKbzl4hOREwpjzqUzHFQJ9ACAT8Je-ijE8NzyQiXVZYFjRniTIAA"
+  }
+}
