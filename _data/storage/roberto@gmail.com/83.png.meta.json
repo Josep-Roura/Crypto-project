@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "original_filename": "83.png",
+  "stored_as": "83.png.enc",
+  "algo": "AES-GCM-256",
+  "ciphertext": {
+    "nonce": "m_q_0cCmIF-M2PJu",
+    "tag": "TR_Aky5DrOfjIKsqxfZ4ng",
+    "length": 25584
+  },
+  "dek_wrapped": {
+    "nonce": "J7W8j1WLw8ifIOB0",
+    "tag": "8VtDh_whFmS6YM4x6Deapw",
+    "ct": "E8DKB6l2da9dDQgHLvH3LStse7cnzLvvDV3YyOsiHWE"
+  },
+  "manifest": {
+    "filename": "83.png",
+    "size": 25584,
+    "algo": "AES-GCM-256",
+    "content_hash": "sha256:9987e9acd8f542f74402f5a62ac2bcbb350c5ed2bf38831779d56a375ae76eb9"
+  },
+  "signature": {
+    "alg": "Ed25519-SHA256",
+    "cert_pem": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJNVENCNUtBREFnRUNBaFJ0d084R0JqNkFKUVVYanMzck1sWlBqUnlxTGpBRkJnTXJaWEF3SmpFa01DSUcKQTFVRUF3d2JRM0o1Y0hSdlJISnBkbVVnU1c1MFpYSnRaV1JwWVhSbElFTkJNQjRYRFRJMU1UQXlOakUxTlRregpORm9YRFRJMk1UQXlOakUyTURBek5Gb3dIREVhTUJnR0ExVUVBd3dSY205aVpYSjBiMEJuYldGcGJDNWpiMjB3CktqQUZCZ01yWlhBRElRQkFIVmtQTXhpbUUvYmt1SkFMN1I3RVAvOTM0OFpLNU9scXppcTdzMS9HL3FNdU1Dd3cKREFZRFZSMFRBUUgvQkFJd0FEQWNCZ05WSFJFRUZUQVRnUkZ5YjJKbGNuUnZRR2R0WVdsc0xtTnZiVEFGQmdNcgpaWEFEUVFCY2RyZ1l4TWR1ZTRLQUVXS1c1MVQ3cFM2SDF3YUt6TTc2ZkhwYkRuR3YzcWJKajdKTkorOVNDRnpPClBsWTFuZUVCLzJ5OVR4elBrZnZRb2JHWjNiZ0kKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo",
+    "signature": "_XDh8ykztTMpE95Ds8MgPuxKf8-zhm0AzgQonFujscgBqfQP-mk2KvqilxtvMUdliemSNEeRiumlFcCK0FQUBg"
+  }
+}
