@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "original_filename": "plano_esp-2.pdf",
+  "stored_as": "plano_esp-2.pdf.enc",
+  "algo": "AES-GCM-256",
+  "ciphertext": {
+    "nonce": "Ivd7BT3ETkhPSjkU",
+    "tag": "BMybiNlPNRVHVJoVl7yMRQ",
+    "length": 967347
+  },
+  "dek_wrapped": {
+    "nonce": "rh76cCVhzfEWx62B",
+    "tag": "BiQ-obgc_pLPga7o_3vs5Q",
+    "ct": "U0FIgMV0oqSRKvHlp3ejRHA0ihBFboYGGpCN9F7p_ZI"
+  },
+  "manifest": {
+    "filename": "plano_esp-2.pdf",
+    "size": 967347,
+    "algo": "AES-GCM-256",
+    "content_hash": "sha256:58605666acdb89893bfe57600924b2c2028952d8f16cf02652cf4901cedf08be"
+  },
+  "signature": {
+    "alg": "Ed25519-SHA256",
+    "cert_pem": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJQVENCOEtBREFnRUNBaFFCTzlHRk9wblhQVDNTQThqTHpndTcvN3h2RURBRkJnTXJaWEF3SmpFa01DSUcKQTFVRUF3d2JRM0o1Y0hSdlJISnBkbVVnU1c1MFpYSnRaV1JwWVhSbElFTkJNQjRYRFRJMU1UQXlOakUzTXpBMQpObG9YRFRJMk1UQXlOakUzTXpFMU5sb3dJakVnTUI0R0ExVUVBd3dYWVd4MllYSnZkbWxzYkdWdVlVQm5iV0ZwCmJDNWpiMjB3S2pBRkJnTXJaWEFESVFCa3FqbFBwcmxUeDY1Z2hmclh0cGxsU0Q4TGVtNTMrL0JEZEpCUkZtbHIKS2FNME1ESXdEQVlEVlIwVEFRSC9CQUl3QURBaUJnTlZIUkVFR3pBWmdSZGhiSFpoY205MmFXeHNaVzVoUUdkdApZV2xzTG1OdmJUQUZCZ01yWlhBRFFRQjNPQXFlOERIeEZjZ2pxdFZtdUdpNnd4TmQ2a0Z4ZHlncHh0MHJ2cjZ2CnVCem9XNWUwbFBMdnlLbFhnY09hZCs0QVc1N2JVNlVUbDNTdDZnemJpQ29ICi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K",
+    "signature": "4Vgp3ZLb-XQhidwFrTcLkJU8aEUBfdSPeJ5U8thDzpavhzbvpvdfAzqBux0Pc5ty3DhKOzTLUlwZve5bqxDnBw"
+  }
+}

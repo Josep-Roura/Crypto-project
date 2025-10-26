@@ -1,19 +1,28 @@
-# auth.py
+# core/auth.py
+# ===== Stdlib =====
 import os
 import json
 import base64
-import datetime as dt
+from datetime import datetime, UTC
 from typing import Tuple, Dict, Any
-from core.password_policy import check_passphrase_strength
+
+# ===== Third-party =====
 from argon2 import PasswordHasher, exceptions as argon_exc
+from cryptography.exceptions import InvalidTag
+
+# ===== First-party =====
+from core.password_policy import check_passphrase_strength
 from core.crypto_kdf import derive_kek
 from core.crypto_sym import (
     aes_gcm_encrypt_with_key,
     aes_gcm_decrypt_with_key,
 )
+from core.storage import load_db, save_db
+
 
 # ===== Config =====
-DATA_DIR = os.getenv("STORAGE_PATH", "./_data")        #Estas líneas establecen donde se va a guardar el json, en concreto users.json
+# Estas líneas establecen dónde se va a guardar el json, en concreto users.json
+DATA_DIR = os.getenv("STORAGE_PATH", "./_data")
 USERS_PATH = os.path.join(DATA_DIR, "users.json")
 os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -33,20 +42,6 @@ def _unb64u(s: str) -> bytes:
     return base64.urlsafe_b64decode(s + pad)
 
 
-def _load_db() -> Dict[str, Any]:
-    if not os.path.exists(USERS_PATH):
-        return {"users": {}}
-    with open(USERS_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def _save_db(db: Dict[str, Any]) -> None:
-    tmp = USERS_PATH + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(db, f, indent=2)
-    os.replace(tmp, USERS_PATH)
-
-
 # ===== API =====
 def register_user(email: str, passphrase: str) -> Tuple[bool, str, str]:
     """
@@ -61,14 +56,14 @@ def register_user(email: str, passphrase: str) -> Tuple[bool, str, str]:
     if not email or not passphrase:
         return False, "Email y passphrase son obligatorios.", ""
 
-    # === Política de passphrase robusta (server-side) ===
+    # Política de passphrase robusta (server-side)
     ok_pw, reasons, score = check_passphrase_strength(passphrase, email=email)
     if not ok_pw:
         msg = "La passphrase no es suficientemente robusta:\n- " + "\n- ".join(reasons)
         dbg = f"[POLICY] score={score}/100"
         return False, msg, dbg
 
-    db = _load_db()
+    db = load_db(USERS_PATH)
     if email in db["users"]:
         return False, "Ya existe un usuario con ese email.", ""
 
@@ -98,13 +93,14 @@ def register_user(email: str, passphrase: str) -> Tuple[bool, str, str]:
             "tag": _b64u(tag),
             "ct": _b64u(ct),
         },
-        "created_at": dt.datetime.utcnow().isoformat() + "Z",
+        "created_at": datetime.now(UTC).isoformat(),
     }
-    _save_db(db)
+    save_db(db, USERS_PATH)
 
     debug = (
         f"[REGISTER] Passphrase score={score}/100 (OK)\n"
-        f"[REGISTER] Argon2id t={KDF_PARAMS['t']} m={KDF_PARAMS['m']}KiB p={KDF_PARAMS['p']} → KEK=256-bit\n"
+        f"[REGISTER] Argon2id t={KDF_PARAMS['t']} m={KDF_PARAMS['m']}KiB "
+        f"p={KDF_PARAMS['p']} → KEK=256-bit\n"
         f"[REGISTER] AES-GCM-256 nonce=96-bit tag=128-bit user_secret=256-bit"
     )
     return True, "Usuario registrado.", debug
@@ -116,7 +112,7 @@ def login(email: str, passphrase: str) -> Tuple[bool, str, Dict[str, Any], str]:
     Returns: (ok, msg, ctx, debug_log)
     ctx = {"email":..., "user_secret": bytes}
     """
-    db = _load_db()
+    db = load_db(USERS_PATH)
     u = db["users"].get(email)
     if not u:
         return False, "Usuario no encontrado.", {}, ""
@@ -132,7 +128,12 @@ def login(email: str, passphrase: str) -> Tuple[bool, str, Dict[str, Any], str]:
     salt = _unb64u(u["salt"])
     kp = u["kdf_params"]
     kek = derive_kek(
-        passphrase, salt, t=kp["t"], m=kp["m"], p=kp["p"], outlen=kp["outlen"]
+        passphrase,
+        salt,
+        t=kp["t"],
+        m=kp["m"],
+        p=kp["p"],
+        outlen=kp["outlen"],
     )
 
     enc = u["enc_user_secret"]
@@ -142,12 +143,13 @@ def login(email: str, passphrase: str) -> Tuple[bool, str, Dict[str, Any], str]:
 
     try:
         user_secret = aes_gcm_decrypt_with_key(kek, nonce, ct, tag)
-    except Exception:
+    except InvalidTag:
         return False, "No se pudo desbloquear la clave del usuario.", {}, ""
 
     ctx = {"email": email, "user_secret": user_secret}
     debug = (
         f"[LOGIN] Argon2id t={kp['t']} m={kp['m']}KiB p={kp['p']} → KEK=256-bit\n"
-        f"[LOGIN] AES-GCM-256 nonce=96-bit tag=128-bit user_secret OK ({len(user_secret)*8} bits)"
+        f"[LOGIN] AES-GCM-256 nonce=96-bit tag=128-bit "
+        f"user_secret OK ({len(user_secret)*8} bits)"
     )
     return True, "Sesión iniciada.", ctx, debug

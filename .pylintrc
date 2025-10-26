@@ -1,0 +1,69 @@
+[MASTER]
+ignore=_data,__pycache__,.venv,venv,.git
+extension-pkg-whitelist=
+jobs=0
+load-plugins=
+persistent=yes
+unsafe-load-any-extension=no
+
+[MESSAGES CONTROL]
+# Deshabilita avisos que no aportan en este proyecto o que ya cubres por diseño
+disable=
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    too-few-public-methods,
+    too-many-arguments,
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    too-many-instance-attributes,
+    fixme, # si no quieres que TODO: marque error
+    duplicate-code
+
+[REPORTS]
+reports=no
+score=yes
+
+[BASIC]
+good-names=
+    i,j,k, # índices en bucles
+    ok,msg,dbg,ctx,db,ct,iv,kek,kdf,kp,dt # abrevs frecuentes en cripto / tus APIs
+    x,y,z,
+    r,g,b,
+    t,p,m # params Argon2 (time/memory/parallelism)
+    u
+argument-naming-style=snake_case
+attr-naming-style=snake_case
+class-attribute-naming-style=any
+const-naming-style=UPPER_CASE
+class-naming-style=PascalCase
+function-naming-style=snake_case
+method-naming-style=snake_case
+module-naming-style=snake_case
+variable-naming-style=snake_case
+# Permite guiones bajos iniciales en nombres "privados"
+no-docstring-rgx=^(_.*|main)$
+
+[FORMAT]
+max-line-length=100
+max-module-lines=2000
+ignore-long-lines=^\s*(# )?<?https?://\S+>?$
+
+[DESIGN]
+max-args=7
+max-locals=25
+max-returns=8
+max-branches=20
+max-statements=80
+
+[TYPECHECK]
+ignored-modules=
+    streamlit
+    argon2
+    cryptography
+    pydantic
+    Crypto
+
+[IMPORTS]
+known-third-party=streamlit,argon2,cryptography
