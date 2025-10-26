@@ -1,5 +1,5 @@
-
 # api/services.py
+from api.pki import pki_init_ca, pki_issue_user_cert, pki_verify_cert
 import os, json, base64, hashlib
 from typing import Dict, Any, Tuple
 
@@ -66,20 +66,78 @@ def canonical_json_bytes(d: Dict[str, Any]) -> bytes:
 def manifest_digest(manifest: Dict[str, Any]) -> bytes:
     return hashlib.sha256(canonical_json_bytes(manifest)).digest()
 
+
+
 def sign_manifest(email: str, user_secret: bytes, manifest: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Firma SHA-256(manifest_canónico) con la privada Ed25519 del usuario.
-    Devuelve bloque con firma y pública (base64 url-safe).
-    """
     priv_pem, pub_pem = ensure_user_sign_keys(email, user_secret)
     digest = manifest_digest(manifest)
     sig = ed25519_sign(priv_pem, digest)
-    return {"alg": "Ed25519-SHA256", "pubkey_pem": _b64u(pub_pem), "signature": _b64u(sig)}
 
-def verify_manifest_signature(manifest: Dict[str, Any], pubkey_pem_b64u: str, signature_b64u: str) -> bool:
+    # adjuntar el certificado del usuario en lugar de la pubkey suelta
+    db = _load_db()
+    cert_b64 = db["users"][email]["sign_cert_pem"]
+    return {"alg": "Ed25519-SHA256", "cert_pem": cert_b64, "signature": _b64u(sig)}
+
+def verify_manifest_signature(manifest: Dict[str, Any], cert_pem_b64u: str, signature_b64u: str) -> bool:
+    cert_pem = _unb64u(cert_pem_b64u)
+
+    # 1) validar certificado contra CA
+    if not pki_verify_cert(cert_pem):
+        return False
+
+    # 2) extraer pubkey del cert y verificar firma
+    from api.pki import pki_pub_from_cert
+    pub_pem = pki_pub_from_cert(cert_pem)
+
     digest = manifest_digest(manifest)
     try:
-        ed25519_verify(_unb64u(pubkey_pem_b64u), digest, _unb64u(signature_b64u))
+        ed25519_verify(pub_pem, digest, _unb64u(signature_b64u))
         return True
     except Exception:
         return False
+    
+
+
+
+
+def ensure_user_sign_keys(email: str, user_secret: bytes) -> Tuple[bytes, bytes]:
+    db = _load_db()
+    u = db["users"].get(email)
+    if u is None:
+        raise RuntimeError("Usuario no encontrado")
+
+    # Si ya existen claves (y cert), descifra privada y devuelve.
+    if "sign_pubkey_pem" in u and "enc_sign_privkey" in u:
+        enc = u["enc_sign_privkey"]
+        priv_pem = aes_gcm_decrypt_with_key(
+            user_secret,
+            _unb64u(enc["nonce"]),
+            _unb64u(enc["ct"]),
+            _unb64u(enc["tag"]),
+        )
+        pub_pem = _unb64u(u["sign_pubkey_pem"])
+
+        # si no tiene cert, emitirlo ahora
+        if "sign_cert_pem" not in u:
+            pki_init_ca()
+            cert_pem = pki_issue_user_cert(email, pub_pem)
+            u["sign_cert_pem"] = _b64u(cert_pem)
+            db["users"][email] = u
+            _save_db(db)
+
+        return priv_pem, pub_pem
+
+    # Generar claves nuevas
+    priv_pem, pub_pem = ed25519_generate_keypair()
+    ct, nonce, tag = aes_gcm_encrypt_with_key(user_secret, priv_pem)
+    u["sign_pubkey_pem"] = _b64u(pub_pem)
+    u["enc_sign_privkey"] = {"nonce": _b64u(nonce), "tag": _b64u(tag), "ct": _b64u(ct)}
+
+    # Emitir certificado X.509 (CA local)
+    pki_init_ca()
+    cert_pem = pki_issue_user_cert(email, pub_pem)
+    u["sign_cert_pem"] = _b64u(cert_pem)
+
+    db["users"][email] = u
+    _save_db(db)
+    return priv_pem, pub_pem

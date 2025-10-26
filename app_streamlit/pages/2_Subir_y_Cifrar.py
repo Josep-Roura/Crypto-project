@@ -2,6 +2,11 @@ import streamlit as st
 from core import crypto_sym
 from api.services import ensure_user_sign_keys, sign_manifest, verify_manifest_signature
 import hashlib
+from api.pki import pki_verify_cert
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes
+import base64
+from cryptography.hazmat.primitives import serialization
 
 st.title("⬆️ Subir y cifrar")
 
@@ -46,7 +51,7 @@ if f and st.button("Cifrar con AES-GCM"):
     sig_block = sign_manifest(email, user_secret, manifest)
 
     # 4 Verificar inmediatamente la firma
-    ok_sig = verify_manifest_signature(manifest, sig_block["pubkey_pem"], sig_block["signature"])
+    ok_sig = verify_manifest_signature(manifest, sig_block["cert_pem"], sig_block["signature"])
 
     # 5 Mostrar resultado en la interfaz
     st.markdown("### Manifiesto firmado")
@@ -54,3 +59,27 @@ if f and st.button("Cifrar con AES-GCM"):
     st.markdown("### Firma generada")
     st.code(sig_block["signature"])
     st.success(" Firma verificada correctamente" if ok_sig else " Error al verificar la firma")
+
+
+    # Mostrar detalles del certificado adjunto
+    cert_pem = base64.urlsafe_b64decode(sig_block["cert_pem"] + "=" * (-len(sig_block["cert_pem"]) % 4))
+    cert = x509.load_pem_x509_certificate(cert_pem)
+
+    st.markdown("### 🪪 Certificado (X.509) adjunto")
+    st.code(cert.public_bytes(encoding=serialization.Encoding.PEM).decode("utf-8"))
+
+    # Campos clave: Subject (email), Issuer (CA), validez y huella
+    subject = cert.subject.rfc4514_string()
+    issuer = cert.issuer.rfc4514_string()
+    nb = cert.not_valid_before
+    na = cert.not_valid_after
+    fp = cert.fingerprint(hashes.SHA256()).hex()
+
+    st.write("**Subject (CN/email):**", subject)
+    st.write("**Issuer (CA):**", issuer)
+    st.write("**Validez:**", f"{nb}  →  {na}")
+    st.write("**Fingerprint SHA-256:**", fp)
+
+    # Validar el certificado contra la CA
+    st.write("**Validación del certificado (contra CA local):**",
+            "✅ OK" if pki_verify_cert(cert_pem) else "❌ FALLA")
