@@ -1,21 +1,32 @@
-# tests/conftest.py
-import os
+# --------------------------------------------------------------
+# File: conftest.py
+# Description: Fixtures compartidas para aislar almacenamiento y recargar módulos.
+# --------------------------------------------------------------
+
 import importlib
+from typing import Iterator
+
 import pytest
 
+
 @pytest.fixture(autouse=True)
-def _isolate_storage(tmp_path, monkeypatch):
-    """
-    Aísla el almacenamiento: fija STORAGE_PATH a un dir temporal
-    y recarga core.auth para que recalculen USERS_PATH con el nuevo entorno.
+def _isolate_storage(tmp_path, monkeypatch) -> Iterator[None]:
+    """Aísla STORAGE_PATH y recarga core.auth para cada prueba.
+
+    Args:
+        tmp_path (Path): Carpeta temporal proporcionada por pytest.
+        monkeypatch (pytest.MonkeyPatch): Fixture para ajustar variables de entorno.
+
+    Returns:
+        Iterator[None]: Control del fixture autouse durante la ejecución de cada test.
     """
     data_dir = tmp_path / "_data"
     data_dir.mkdir()
     monkeypatch.setenv("STORAGE_PATH", str(data_dir))
 
-    # Importa y recarga el módulo que lee STORAGE_PATH en import-time
-    import core.auth as auth_module  # import aquí, no arriba del archivo
+    import core.auth as auth_module
+
     importlib.reload(auth_module)
 
     yield
-    # tmp_path se limpia automáticamente
+    # tmp_path se limpia automáticamente por pytest
