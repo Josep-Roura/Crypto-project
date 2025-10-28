@@ -1,8 +1,14 @@
-# api/pki.py
+# --------------------------------------------------------------
+# File: pki.py
+# Description: Infraestructura de clave pública para certificados y validaciones.
+# --------------------------------------------------------------
+"""Utilidades PKI para la emisión, almacenamiento y verificación de certificados."""
+
 import os
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
+
 from cryptography import x509
-from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.x509.oid import NameOID
 
@@ -15,18 +21,23 @@ SUBCA_CERT = os.path.join(CA_DIR, "subca_cert.pem")
 
 
 def _ensure_dir() -> None:
+    """Crea el directorio de la infraestructura PKI si aún no existe."""
+
     os.makedirs(CA_DIR, exist_ok=True)
 
 
 def pki_init_ca(common_name: str = "CryptoDrive Local CA") -> None:
+    """Inicializa la autoridad certificadora raíz si los artefactos no existen.
+
+    Args:
+        common_name (str): Nombre común que se incluirá en el certificado raíz.
     """
-    Crea una CA Ed25519 si no existe. Guarda ca_key.pem y ca_cert.pem en _data/ca/.
-    """
+
     _ensure_dir()
     if os.path.exists(CA_KEY) and os.path.exists(CA_CERT):
         return
 
-    # Generar clave privada de la CA
+    # Genera la clave privada de la CA raíz.
     ca_priv = ed25519.Ed25519PrivateKey.generate()
     ca_pub = ca_priv.public_key()
 
@@ -38,7 +49,7 @@ def pki_init_ca(common_name: str = "CryptoDrive Local CA") -> None:
         .public_key(ca_pub)
         .serial_number(x509.random_serial_number())
         .not_valid_before(datetime.now(UTC) - timedelta(minutes=1))
-        .not_valid_after(datetime.now(UTC) + timedelta(days=3650))  # 10 años
+        .not_valid_after(datetime.now(UTC) + timedelta(days=3650))
         .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
         .add_extension(
             x509.KeyUsage(
@@ -57,40 +68,53 @@ def pki_init_ca(common_name: str = "CryptoDrive Local CA") -> None:
     )
     ca_cert = builder.sign(private_key=ca_priv, algorithm=None)
 
-    # Guardar clave y cert
-    with open(CA_KEY, "wb") as f:
-        f.write(
+    # SECURITY: almacena la clave raíz en disco sin exponerla fuera del contenedor.
+    with open(CA_KEY, "wb") as handler:
+        handler.write(
             ca_priv.private_bytes(
                 serialization.Encoding.PEM,
                 serialization.PrivateFormat.PKCS8,
                 serialization.NoEncryption(),
             )
         )
-    with open(CA_CERT, "wb") as f:
-        f.write(ca_cert.public_bytes(serialization.Encoding.PEM))
+    with open(CA_CERT, "wb") as handler:
+        handler.write(ca_cert.public_bytes(serialization.Encoding.PEM))
 
 
-def _load_ca():
-    with open(CA_KEY, "rb") as f:
-        ca_priv = serialization.load_pem_private_key(f.read(), password=None)
-    with open(CA_CERT, "rb") as f:
-        ca_cert = x509.load_pem_x509_certificate(f.read())
+def _load_ca() -> tuple[ed25519.Ed25519PrivateKey, x509.Certificate]:
+    """Recupera la clave privada y el certificado de la CA raíz desde disco.
+
+    Returns:
+        tuple[ed25519.Ed25519PrivateKey, x509.Certificate]: Par (clave_privada, certificado).
+    """
+
+    with open(CA_KEY, "rb") as handler:
+        ca_priv = serialization.load_pem_private_key(handler.read(), password=None)
+    with open(CA_CERT, "rb") as handler:
+        ca_cert = x509.load_pem_x509_certificate(handler.read())
     return ca_priv, ca_cert
 
 
 def pki_issue_user_cert(email: str, user_pub_pem: bytes, days_valid: int = 365) -> bytes:
+    """Emite un certificado de usuario firmado por la autoridad subordinada.
+
+    Args:
+        email (str): Correo electrónico que se incorporará como sujeto.
+        user_pub_pem (bytes): Clave pública del usuario en formato PEM.
+        days_valid (int): Cantidad de días de validez del certificado.
+
+    Returns:
+        bytes: Certificado X.509 codificado en PEM.
     """
-    Emite un certificado X.509 para la clave pública del usuario (Ed25519),
-    firmado por la AC subordinada (AC2).
-    """
+
     pki_init_ca()
     pki_init_subca()
 
-    # Cargar AC2
-    with open(SUBCA_KEY, "rb") as f:
-        sub_priv = serialization.load_pem_private_key(f.read(), password=None)
-    with open(SUBCA_CERT, "rb") as f:
-        sub_cert = x509.load_pem_x509_certificate(f.read())
+    # Carga la autoridad subordinada existente o recién creada.
+    with open(SUBCA_KEY, "rb") as handler:
+        sub_priv = serialization.load_pem_private_key(handler.read(), password=None)
+    with open(SUBCA_CERT, "rb") as handler:
+        sub_cert = x509.load_pem_x509_certificate(handler.read())
 
     user_pub = serialization.load_pem_public_key(user_pub_pem)
 
@@ -106,30 +130,32 @@ def pki_issue_user_cert(email: str, user_pub_pem: bytes, days_valid: int = 365) 
         .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
         .add_extension(x509.SubjectAlternativeName([x509.RFC822Name(email)]), critical=False)
     )
-    user_cert = builder.sign(private_key=sub_priv, algorithm=None)  # Ed25519
+    user_cert = builder.sign(private_key=sub_priv, algorithm=None)
     return user_cert.public_bytes(serialization.Encoding.PEM)
 
 
 def pki_verify_cert(cert_pem: bytes) -> bool:
+    """Valida la cadena de confianza completa del certificado de usuario.
+
+    Args:
+        cert_pem (bytes): Certificado del usuario codificado en PEM.
+
+    Returns:
+        bool: ``True`` si la cadena raíz-subCA-usuario es válida.
     """
-    Verifica cadena Usuario -> SubCA -> Root:
-      - Fechas del usuario/subCA/root
-      - Firma de usuario con SubCA
-      - Firma de SubCA con Root
-      - Coincidencia issuer/subject
-    """
+
     pki_init_ca()
     pki_init_subca()
 
-    # Cargar certs
-    with open(CA_CERT, "rb") as f:
-        root_cert = x509.load_pem_x509_certificate(f.read())
-    with open(SUBCA_CERT, "rb") as f:
-        sub_cert = x509.load_pem_x509_certificate(f.read())
+    # Carga los certificados raíz y subordinado necesarios para la validación.
+    with open(CA_CERT, "rb") as handler:
+        root_cert = x509.load_pem_x509_certificate(handler.read())
+    with open(SUBCA_CERT, "rb") as handler:
+        sub_cert = x509.load_pem_x509_certificate(handler.read())
 
     user_cert = x509.load_pem_x509_certificate(cert_pem)
 
-    # Fechas (timezone-aware) usando propiedades *_utc
+    # Comprueba la validez temporal de cada certificado usando referencias con zona horaria.
     now = datetime.now(UTC)
     if not (user_cert.not_valid_before_utc <= now <= user_cert.not_valid_after_utc):
         return False
@@ -138,14 +164,14 @@ def pki_verify_cert(cert_pem: bytes) -> bool:
     if not (root_cert.not_valid_before_utc <= now <= root_cert.not_valid_after_utc):
         return False
 
-    # Firmas: user <- subCA, subCA <- root
+    # Valida firmas cruzadas: usuario firmado por subCA y subCA firmado por la raíz.
     try:
         sub_cert.public_key().verify(user_cert.signature, user_cert.tbs_certificate_bytes)
         root_cert.public_key().verify(sub_cert.signature, sub_cert.tbs_certificate_bytes)
-    except Exception:  # verificación fallida
+    except Exception:
         return False
 
-    # Issuers esperados
+    # Verifica que emisores y sujetos coincidan con la jerarquía esperada.
     if user_cert.issuer != sub_cert.subject:
         return False
     if sub_cert.issuer != root_cert.subject:
@@ -155,9 +181,15 @@ def pki_verify_cert(cert_pem: bytes) -> bool:
 
 
 def pki_pub_from_cert(cert_pem: bytes) -> bytes:
+    """Extrae la clave pública PEM desde un certificado X.509 Ed25519.
+
+    Args:
+        cert_pem (bytes): Certificado en formato PEM del cual se obtendrá la clave.
+
+    Returns:
+        bytes: Clave pública codificada en PEM.
     """
-    Extrae la public key PEM de un certificado X.509 Ed25519.
-    """
+
     cert = x509.load_pem_x509_certificate(cert_pem)
     pub = cert.public_key()
     return pub.public_bytes(
@@ -167,11 +199,13 @@ def pki_pub_from_cert(cert_pem: bytes) -> bytes:
 
 
 def pki_init_subca(common_name: str = "CryptoDrive Intermediate CA") -> None:
+    """Inicializa la autoridad certificadora subordinada si no existe.
+
+    Args:
+        common_name (str): Nombre común que identificará a la sub-CA.
     """
-    Crea una AC subordinada Ed25519 si no existe. Firmada por la CA raíz.
-    """
+
     _ensure_dir()
-    # Necesitamos la raíz primero
     pki_init_ca()
     if os.path.exists(SUBCA_KEY) and os.path.exists(SUBCA_CERT):
         return
@@ -189,19 +223,19 @@ def pki_init_subca(common_name: str = "CryptoDrive Intermediate CA") -> None:
         .public_key(sub_pub)
         .serial_number(x509.random_serial_number())
         .not_valid_before(datetime.now(UTC) - timedelta(minutes=1))
-        .not_valid_after(datetime.now(UTC) + timedelta(days=3650))  # 10 años
+        .not_valid_after(datetime.now(UTC) + timedelta(days=3650))
         .add_extension(x509.BasicConstraints(ca=True, path_length=0), critical=True)
     )
-    # Ed25519 → algorithm=None
+    # En Ed25519 la firma se realiza estableciendo algorithm=None.
     sub_cert = builder.sign(private_key=root_priv, algorithm=None)
 
-    with open(SUBCA_KEY, "wb") as f:
-        f.write(
+    with open(SUBCA_KEY, "wb") as handler:
+        handler.write(
             sub_priv.private_bytes(
                 serialization.Encoding.PEM,
                 serialization.PrivateFormat.PKCS8,
                 serialization.NoEncryption(),
             )
         )
-    with open(SUBCA_CERT, "wb") as f:
-        f.write(sub_cert.public_bytes(serialization.Encoding.PEM))
+    with open(SUBCA_CERT, "wb") as handler:
+        handler.write(sub_cert.public_bytes(serialization.Encoding.PEM))

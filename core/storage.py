@@ -1,4 +1,9 @@
-# core/storage.py
+# --------------------------------------------------------------
+# File: storage.py
+# Description: Utilidades de persistencia para la base de datos JSON de usuarios.
+# --------------------------------------------------------------
+"""Funciones auxiliares de entrada/salida para el almacenamiento local."""
+
 from __future__ import annotations
 
 import json
@@ -11,34 +16,35 @@ _DEFAULT_DB: Dict[str, Any] = {"users": {}}
 
 
 def _ensure_parent_dir(path: str) -> None:
-    """Crea el directorio padre si no existe."""
+    """Garantiza que exista el directorio padre del archivo de destino."""
+
     parent = os.path.dirname(path) or "."
     os.makedirs(parent, exist_ok=True)
 
 
 def load_db(path: str) -> Dict[str, Any]:
+    """Carga un archivo JSON y devuelve un diccionario seguro para uso interno.
+
+    Args:
+        path (str): Ruta del archivo JSON de usuarios.
+
+    Returns:
+        Dict[str, Any]: Estructura cargada o la base vacía si no es accesible.
+
     """
-    Carga un JSON desde 'path'.
-    - Si no existe, devuelve {'users': {}}.
-    - Si está corrupto, devuelve también {'users': {}} (fail-safe).
-      (Si prefieres propagar el error, cambia el except a 'raise').
-    """
+
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return dict(_DEFAULT_DB)
-    except json.JSONDecodeError:
+        with open(path, "r", encoding="utf-8") as handler:
+            return json.load(handler)
+    except (FileNotFoundError, json.JSONDecodeError):
         return dict(_DEFAULT_DB)
 
 
 def save_db(db: Dict[str, Any], path: str) -> None:
-    """
-    Guarda 'db' en JSON usando escritura atómica:
-    escribe en 'path.tmp' y luego reemplaza el definitivo.
-    """
+    """Guarda la base de datos JSON aplicando escritura atómica."""
+
     _ensure_parent_dir(path)
-    tmp = f"{path}.tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(db, f, indent=2, ensure_ascii=False)
-    os.replace(tmp, path)
+    tmp_path = f"{path}.tmp"
+    with open(tmp_path, "w", encoding="utf-8") as handler:
+        json.dump(db, handler, indent=2, ensure_ascii=False)
+    os.replace(tmp_path, path)
