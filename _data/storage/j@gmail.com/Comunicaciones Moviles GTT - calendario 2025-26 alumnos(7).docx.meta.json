@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "original_filename": "Comunicaciones Moviles GTT - calendario 2025-26 alumnos(7).docx",
+  "stored_as": "Comunicaciones Moviles GTT - calendario 2025-26 alumnos(7).docx.enc",
+  "algo": "AES-GCM-256",
+  "ciphertext": {
+    "nonce": "nRFUJEKwToBziqwv",
+    "tag": "0BiiXoDguSqGak15V2h8VA",
+    "length": 24160
+  },
+  "dek_wrapped": {
+    "nonce": "kpu5Sg_tY1MwD4RY",
+    "tag": "KVW7-iq3vS9i23lmw7pINA",
+    "ct": "w-o2Z-OFnvZzwo5kKQ8CkrzLCOWy1Pk_YMpJbMJqwak"
+  },
+  "manifest": {
+    "filename": "Comunicaciones Moviles GTT - calendario 2025-26 alumnos(7).docx",
+    "size": 24160,
+    "algo": "AES-GCM-256",
+    "content_hash": "sha256:8261bef1c6b00e91a76723d5659b08fca4651337dc118a498764407299883d08"
+  },
+  "signature": {
+    "alg": "Ed25519-SHA256",
+    "cert_pem": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJKVENCMktBREFnRUNBaFFQd1BIQnB3YURlTGU4TUhQaDRFVXJ6WWllK0RBRkJnTXJaWEF3SmpFa01DSUcKQTFVRUF3d2JRM0o1Y0hSdlJISnBkbVVnU1c1MFpYSnRaV1JwWVhSbElFTkJNQjRYRFRJMU1UQXlPREUxTkRRMApObG9YRFRJMk1UQXlPREUxTkRVME5sb3dGakVVTUJJR0ExVUVBd3dMYWtCbmJXRnBiQzVqYjIwd0tqQUZCZ01yClpYQURJUUNrbWt0WUJXd3ZRMEt4aStiMDhEN1kzT2UwUWpWOCtrQmFNQm91d1VoQUc2TW9NQ1l3REFZRFZSMFQKQVFIL0JBSXdBREFXQmdOVkhSRUVEekFOZ1F0cVFHZHRZV2xzTG1OdmJUQUZCZ01yWlhBRFFRQVpoTXpLZk5sSQp4VlNhc3dTYk9CbmpmVy91QUZFaGNVQWVRTzhhR3JiMWRkNG9ZSC9tL0xkSFAvaWpaQ1puV3NRcVlrUkIzbCtzClFhRERQSUFnS1FjQgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg",
+    "signature": "wk5e4Tc1UMyvyT6E1pinE47Cp8Kuh4RKsct_rNuayVJzZrhCEXEx5gy2J5uEZVQJq1c5woa4gB--n2cLGDeWCQ"
+  }
+}
