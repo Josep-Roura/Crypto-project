@@ -95,6 +95,51 @@ def _load_ca() -> tuple[ed25519.Ed25519PrivateKey, x509.Certificate]:
     return ca_priv, ca_cert
 
 
+def pki_init_subca(common_name: str = "CryptoDrive Intermediate CA") -> None:
+    """Inicializa la autoridad certificadora subordinada si no existe.
+
+    Args:
+        common_name (str): Nombre común que identificará a la sub-CA.
+    """
+
+    _ensure_dir()
+    pki_init_ca()
+    if os.path.exists(SUBCA_KEY) and os.path.exists(SUBCA_CERT):
+        return
+
+    root_priv, root_cert = _load_ca()
+
+    sub_priv = ed25519.Ed25519PrivateKey.generate()
+    sub_pub = sub_priv.public_key()
+
+    subject = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, common_name)])
+    builder = (
+        x509.CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(root_cert.subject)
+        .public_key(sub_pub)
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(datetime.now(UTC) - timedelta(minutes=1))
+        .not_valid_after(datetime.now(UTC) + timedelta(days=3650))
+        .add_extension(x509.BasicConstraints(ca=True, path_length=0), critical=True)
+    )
+    # En Ed25519 la firma se realiza estableciendo algorithm=None.
+    sub_cert = builder.sign(private_key=root_priv, algorithm=None)
+
+    with open(SUBCA_KEY, "wb") as handler:
+        handler.write(
+            sub_priv.private_bytes(
+                serialization.Encoding.PEM,
+                serialization.PrivateFormat.PKCS8,
+                serialization.NoEncryption(),
+            )
+        )
+    with open(SUBCA_CERT, "wb") as handler:
+        handler.write(sub_cert.public_bytes(serialization.Encoding.PEM))
+
+
+
+
 def pki_issue_user_cert(email: str, user_pub_pem: bytes, days_valid: int = 365) -> bytes:
     """Emite un certificado de usuario firmado por la autoridad subordinada.
 
@@ -198,44 +243,3 @@ def pki_pub_from_cert(cert_pem: bytes) -> bytes:
     )
 
 
-def pki_init_subca(common_name: str = "CryptoDrive Intermediate CA") -> None:
-    """Inicializa la autoridad certificadora subordinada si no existe.
-
-    Args:
-        common_name (str): Nombre común que identificará a la sub-CA.
-    """
-
-    _ensure_dir()
-    pki_init_ca()
-    if os.path.exists(SUBCA_KEY) and os.path.exists(SUBCA_CERT):
-        return
-
-    root_priv, root_cert = _load_ca()
-
-    sub_priv = ed25519.Ed25519PrivateKey.generate()
-    sub_pub = sub_priv.public_key()
-
-    subject = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, common_name)])
-    builder = (
-        x509.CertificateBuilder()
-        .subject_name(subject)
-        .issuer_name(root_cert.subject)
-        .public_key(sub_pub)
-        .serial_number(x509.random_serial_number())
-        .not_valid_before(datetime.now(UTC) - timedelta(minutes=1))
-        .not_valid_after(datetime.now(UTC) + timedelta(days=3650))
-        .add_extension(x509.BasicConstraints(ca=True, path_length=0), critical=True)
-    )
-    # En Ed25519 la firma se realiza estableciendo algorithm=None.
-    sub_cert = builder.sign(private_key=root_priv, algorithm=None)
-
-    with open(SUBCA_KEY, "wb") as handler:
-        handler.write(
-            sub_priv.private_bytes(
-                serialization.Encoding.PEM,
-                serialization.PrivateFormat.PKCS8,
-                serialization.NoEncryption(),
-            )
-        )
-    with open(SUBCA_CERT, "wb") as handler:
-        handler.write(sub_cert.public_bytes(serialization.Encoding.PEM))

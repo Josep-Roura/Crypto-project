@@ -18,6 +18,7 @@ from core.crypto_sym import aes_gcm_decrypt_with_key, aes_gcm_encrypt_with_key
 DATA_DIR = os.getenv("STORAGE_PATH", "./_data")
 USERS_PATH = os.path.join(DATA_DIR, "users.json")
 
+#=============================== HELPERS ===============================================
 
 def _b64u(data: bytes) -> str:
     """Convierte datos binarios en una cadena Base64 URL-safe sin relleno.
@@ -69,6 +70,25 @@ def _save_db(db: Dict[str, Any]) -> None:
     with open(tmp_path, "w", encoding="utf-8") as handler:
         json.dump(db, handler, indent=2, ensure_ascii=False)
     os.replace(tmp_path, USERS_PATH)
+
+
+
+def canonical_json_bytes(payload: Dict[str, Any]) -> bytes:
+    """Serializa un diccionario JSON de manera determinista para firmarlo.
+
+    Args:
+        payload (Dict[str, Any]): Datos que formarán parte del manifiesto.
+
+    Returns:
+        bytes: Representación JSON canonizada en UTF-8.
+    """
+
+    # Genera JSON con claves ordenadas y sin espacios para lograr un digest estable.
+    return json.dumps(payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False).encode("utf-8")
+
+
+
+#===================================================================================
 
 
 # SECURITY: la clave privada siempre se almacena cifrada con el secreto del usuario.
@@ -130,18 +150,6 @@ def ensure_user_sign_keys(email: str, user_secret: bytes) -> Tuple[bytes, bytes]
     return private_pem, public_pem
 
 
-def canonical_json_bytes(payload: Dict[str, Any]) -> bytes:
-    """Serializa un diccionario JSON de manera determinista para firmarlo.
-
-    Args:
-        payload (Dict[str, Any]): Datos que formarán parte del manifiesto.
-
-    Returns:
-        bytes: Representación JSON canonizada en UTF-8.
-    """
-
-    # Genera JSON con claves ordenadas y sin espacios para lograr un digest estable.
-    return json.dumps(payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False).encode("utf-8")
 
 
 def manifest_digest(manifest: Dict[str, Any]) -> bytes:

@@ -17,6 +17,8 @@ from api.services import ensure_user_sign_keys, sign_manifest, verify_manifest_s
 from core.crypto_sym import aes_gcm_encrypt_with_key
 
 
+#================================== HELPERS ==========================================#
+
 def b64u(data: bytes) -> str:
     """Convierte bytes a base64 url-safe sin relleno.
 
@@ -42,6 +44,9 @@ def secure_name(name: str) -> str:
     for ch in bad:
         name = name.replace(ch, "_")
     return name.strip().replace("..", "_")
+
+
+#=======================================================================================#
 
 
 # Presenta el título de la sección dedicada al cifrado.
