@@ -9,6 +9,8 @@ PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
 STREAMLIT = $(VENV)/bin/streamlit
 PYLINT = $(VENV)/bin/pylint
+PYTHON_BIN = python3.12
+
 
 # === Rutas principales ===
 APP = app_streamlit/Home.py
@@ -21,7 +23,7 @@ export PYTHONPATH := $(shell pwd)
 
 # === Crear entorno virtual ===
 $(VENV)/bin/activate: requirements.txt
-	python3 -m venv $(VENV)
+	$(PYTHON_BIN) -m venv $(VENV)
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
 	@echo "✅ Entorno virtual creado y dependencias instaladas."

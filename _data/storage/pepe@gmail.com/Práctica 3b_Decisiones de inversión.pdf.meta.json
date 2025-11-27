@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "original_filename": "Práctica 3b_Decisiones de inversión.pdf",
+  "stored_as": "Práctica 3b_Decisiones de inversión.pdf.enc",
+  "algo": "AES-GCM-256",
+  "ciphertext": {
+    "nonce": "m5vLvVFJ7wupQrJd",
+    "tag": "1QQ6pyVttv2u7cSUMqDjOQ",
+    "length": 165147
+  },
+  "dek_wrapped": {
+    "nonce": "swu3IdmaRCo_Wptz",
+    "tag": "jLyzMCfXbQxjcC8Rbp87NA",
+    "ct": "s0p2Ck5ORlz7jFUDf8A8GDbzQiM8_9RGu7U26IsDlck"
+  },
+  "manifest": {
+    "filename": "Práctica 3b_Decisiones de inversión.pdf",
+    "size": 165147,
+    "algo": "AES-GCM-256",
+    "content_hash": "sha256:51b6866ddf89ceacb4b16f8a9e9f24150fccdfd84e15c7bc6140923accfae35b"
+  },
+  "signature": {
+    "alg": "Ed25519-SHA256",
+    "cert_pem": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJLekNCM3FBREFnRUNBaFFWVHdWU0dKa1h0SWF3SlNtdy92d2p0WXRWS1RBRkJnTXJaWEF3SmpFa01DSUcKQTFVRUF3d2JRM0o1Y0hSdlJISnBkbVVnU1c1MFpYSnRaV1JwWVhSbElFTkJNQjRYRFRJMU1UQXlPREUzTlRVMQpNbG9YRFRJMk1UQXlPREUzTlRZMU1sb3dHVEVYTUJVR0ExVUVBd3dPY0dWd1pVQm5iV0ZwYkM1amIyMHdLakFGCkJnTXJaWEFESVFBaXdlTXFkTDFQWnE0Y0NJSytWSjhtemJKV0Zad3NpVFhScWdtanlCNFQ5cU1yTUNrd0RBWUQKVlIwVEFRSC9CQUl3QURBWkJnTlZIUkVFRWpBUWdRNXdaWEJsUUdkdFlXbHNMbU52YlRBRkJnTXJaWEFEUVFDbApPVm9SUTZienRzWU9meGFaN0E1b2hFcys5NW1sc1FKcVMyRS9nNHAwNGduK3pLYWdZNzVWdHVKN1dJY0F1TmFvCkZCUEh1VUFLdDdPTjljVzU5YVlDCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K",
+    "signature": "CYDMlwll3DK9CxLRd525ii_4tNXqa0yfzyOUK74VHFOMzvyiy1nTjDqnLySOGKjjgs9mC1lzz68Tfaj-PxldAg"
+  }
+}
