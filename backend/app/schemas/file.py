@@ -10,7 +10,8 @@ class FileOut(BaseModel):
     filename: str
     encryption_algorithm: str
     key_encryption_algorithm: str
-    signature: bytes | None = None
+    # 👇 Importante: YA NO ENVIAMOS LA FIRMA EN BRUTO
+    # signature: bytes | None = None
     signature_algorithm: str | None = None
     created_at: datetime
 
