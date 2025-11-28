@@ -28,6 +28,7 @@ with tab_reg:
         ),
     )
 
+
     ok_pw, reasons, score = (False, [], 0)
     if passphrase:
         # Evalúa la fortaleza de la passphrase con la política definida.
@@ -35,6 +36,7 @@ with tab_reg:
         st.progress(score / 100.0, text=f"Fortaleza estimada: {score}/100")
         if not ok_pw:
             st.warning("Mejoras recomendadas:\n- " + "\n- ".join(reasons))
+
 
     disabled = (not email) or (not passphrase) or (not ok_pw)
 
