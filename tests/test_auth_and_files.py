@@ -1,4 +1,3 @@
-# tests/test_auth_and_files.py
 import uuid
 from typing import Dict
 
@@ -9,6 +8,20 @@ def _random_email() -> str:
 
 def _random_username() -> str:
     return f"user_{uuid.uuid4().hex[:8]}"
+
+
+def _collect_user_id(register_data: Dict, login_data: Dict) -> str | None:
+    return (login_data.get("id") or register_data.get("id") or register_data.get("user_id"))
+
+
+def _auth_headers(user_id: str | None, login_data: Dict) -> Dict[str, str]:
+    headers: Dict[str, str] = {}
+    if user_id:
+        headers["X-User-Id"] = str(user_id)
+    token = login_data.get("access_token")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
 
 
 def test_register_and_login(client):
@@ -63,17 +76,81 @@ def test_register_and_login(client):
         assert login_data.get("email") == email
 
 
-def test_files_smoke_if_exists(client):
+def test_register_login_and_upload_file(client):
     """
-    Very soft smoke test for /api/files:
-    - If the endpoint returns 404, we don't fail (maybe it's protected or not implemented).
-    - If it exists, we only assert it doesn't crash (no 5xx).
+    Register + login + upload a simple text file.
+    Accepts either token-based or header-based auth styles.
     """
-    resp = client.get("/api/files")
 
-    if resp.status_code == 404:
-        # Endpoint not implemented or requires auth, don't make the test fail.
-        return
+    email = _random_email()
+    username = _random_username()
+    password = "uploadpassword123"
 
-    # If it exists, at least ensure there's no 5xx error
-    assert resp.status_code < 500, resp.text
+    register_payload: Dict[str, str] = {
+        "email": email,
+        "username": username,
+        "password": password,
+    }
+
+    reg_resp = client.post("/api/auth/register", json=register_payload)
+    assert reg_resp.status_code in (200, 201), reg_resp.text
+    reg_data = reg_resp.json()
+
+    login_resp = client.post(
+        "/api/auth/login",
+        json={"username": username, "password": password},
+    )
+    assert login_resp.status_code == 200, login_resp.text
+    login_data = login_resp.json()
+
+    user_id = _collect_user_id(reg_data, login_data)
+    headers = _auth_headers(user_id, login_data)
+
+    # Ensure crypto keys exist for the uploader
+    keys_resp = client.post("/api/keys/me", headers=headers)
+    assert keys_resp.status_code in (200, 201, 400), keys_resp.text
+
+    files = {"uploaded_file": ("hello.txt", b"hello world", "text/plain")}
+    upload_resp = client.post("/api/files", headers=headers, files=files)
+    assert upload_resp.status_code in (200, 201), upload_resp.text
+    upload_data = upload_resp.json()
+    assert isinstance(upload_data, dict)
+    if "filename" in upload_data:
+        assert upload_data.get("filename") == "hello.txt"
+
+
+def test_upload_binary_file_without_utf8_error(client):
+    """
+    Uploads a binary payload and ensures no UnicodeDecodeError or 5xx responses occur.
+    """
+
+    email = _random_email()
+    username = _random_username()
+    password = "binarypassword123"
+
+    reg_resp = client.post(
+        "/api/auth/register",
+        json={"email": email, "username": username, "password": password},
+    )
+    assert reg_resp.status_code in (200, 201), reg_resp.text
+    reg_data = reg_resp.json()
+
+    login_resp = client.post(
+        "/api/auth/login",
+        json={"username": username, "password": password},
+    )
+    assert login_resp.status_code == 200, login_resp.text
+    login_data = login_resp.json()
+
+    user_id = _collect_user_id(reg_data, login_data)
+    headers = _auth_headers(user_id, login_data)
+
+    keys_resp = client.post("/api/keys/me", headers=headers)
+    assert keys_resp.status_code in (200, 201, 400), keys_resp.text
+
+    binary_content = b"\x8e\xff\x00\x01binarydata"
+    files = {"uploaded_file": ("binary.bin", binary_content, "application/octet-stream")}
+    upload_resp = client.post("/api/files", headers=headers, files=files)
+    assert upload_resp.status_code in (200, 201), upload_resp.text
+    body_text = upload_resp.text
+    assert "UnicodeDecodeError" not in body_text
