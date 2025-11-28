@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class FileOut(BaseModel):
@@ -15,8 +15,7 @@ class FileOut(BaseModel):
     signature_algorithm: str | None = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FileShareRequest(BaseModel):
@@ -33,8 +32,7 @@ class SharedFileOut(BaseModel):
     has_signature: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SharedByMeOut(BaseModel):
@@ -47,5 +45,4 @@ class SharedByMeOut(BaseModel):
     has_signature: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

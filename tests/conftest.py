@@ -1,32 +1,25 @@
-# --------------------------------------------------------------
-# File: conftest.py
-# Description: Fixtures compartidas para aislar almacenamiento y recargar módulos.
-# --------------------------------------------------------------
-
-import importlib
-from typing import Iterator
+# tests/conftest.py
+import os
+import sys
 
 import pytest
+from starlette.testclient import TestClient
+
+# Compute project root: .../Crypto-project
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(THIS_DIR)
+
+# Add backend/ to sys.path so that `import app` works
+BACKEND_PATH = os.path.join(PROJECT_ROOT, "backend")
+if BACKEND_PATH not in sys.path:
+    sys.path.insert(0, BACKEND_PATH)
+
+from app.main import app  # noqa: E402
 
 
-@pytest.fixture(autouse=True)
-def _isolate_storage(tmp_path, monkeypatch) -> Iterator[None]:
-    """Aísla STORAGE_PATH y recarga core.auth para cada prueba.
-
-    Args:
-        tmp_path (Path): Carpeta temporal proporcionada por pytest.
-        monkeypatch (pytest.MonkeyPatch): Fixture para ajustar variables de entorno.
-
-    Returns:
-        Iterator[None]: Control del fixture autouse durante la ejecución de cada test.
+@pytest.fixture(scope="session")
+def client() -> TestClient:
     """
-    data_dir = tmp_path / "_data"
-    data_dir.mkdir()
-    monkeypatch.setenv("STORAGE_PATH", str(data_dir))
-
-    import core.auth as auth_module
-
-    importlib.reload(auth_module)
-
-    yield
-    # tmp_path se limpia automáticamente por pytest
+    Shared FastAPI TestClient for the whole test session.
+    """
+    return TestClient(app)
