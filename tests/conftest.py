@@ -1,28 +1,14 @@
-<<<<<<< HEAD
-import os
-import sys
-=======
+
 # tests/conftest.py
 
 import os
 import sys
 from pathlib import Path
->>>>>>> main
+
 
 import pytest
 from starlette.testclient import TestClient
 
-<<<<<<< HEAD
-# Ruta de este archivo
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(THIS_DIR)
-
-# Añadimos backend/ al sys.path para poder hacer `import app`
-BACKEND_PATH = os.path.join(PROJECT_ROOT, "backend")
-if BACKEND_PATH not in sys.path:
-    sys.path.insert(0, BACKEND_PATH)
-
-=======
 # === Localizar rutas del proyecto ===
 THIS_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = THIS_DIR.parent  # C:\Users\...\Crypto-project
@@ -55,17 +41,12 @@ else:
     os.environ.setdefault("JWT_SECRET_KEY", "testsecret")
 
 # Importamos la app ya con las variables preparadas
->>>>>>> main
 from app.main import app  # noqa: E402
 
 
 @pytest.fixture(scope="session")
 def client() -> TestClient:
     """
-<<<<<<< HEAD
-    Cliente compartido de FastAPI para todos los tests.
-=======
     Cliente de pruebas compartido para toda la sesión de pytest.
->>>>>>> main
     """
     return TestClient(app)
