@@ -1,9 +1,4 @@
-# tests/test_health.py
-
-from starlette.testclient import TestClient
-
-
-def test_health_endpoint(client: TestClient):
+def test_health_endpoint(client):
     """
     Valida el endpoint `/api/health` como sonda de disponibilidad.
 
@@ -18,12 +13,7 @@ def test_health_endpoint(client: TestClient):
       el check de salud.
     """
     resp = client.get("/api/health")
-
-    # Si no existe, aceptamos 404
-    if resp.status_code == 404:
-        return
-
-    # En caso contrario, al menos que no haya error de servidor
-    assert resp.status_code < 500, resp.text
+    assert resp.status_code == 200
     data = resp.json()
     assert isinstance(data, dict)
+    assert data.get("status") == "ok"

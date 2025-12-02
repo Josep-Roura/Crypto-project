@@ -1,3 +1,5 @@
+# tests/conftest.py
+
 """
 Fixtures y bootstrap de entorno para los tests de la API.
 
@@ -9,6 +11,7 @@ las pruebas de autenticación y cifrado se inicien con claves conocidas.
 import os
 import sys
 from pathlib import Path
+
 
 import pytest
 from starlette.testclient import TestClient
