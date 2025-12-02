@@ -9,6 +9,13 @@ from app.db.base import Base
 
 
 class FileShare(Base):
+    """Llave simétrica re-cifrada para compartir un archivo.
+
+    `encrypted_key_for_recipient` guarda la llave AES cifrada con la clave pública RSA
+    del destinatario (RSA-OAEP), permitiendo que cada receptor descifre su copia sin
+    revelar el secreto original a otros usuarios.
+    """
+
     __tablename__ = "file_shares"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

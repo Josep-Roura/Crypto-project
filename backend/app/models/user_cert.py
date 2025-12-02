@@ -9,6 +9,13 @@ from app.db.base import Base
 
 
 class UserCert(Base):
+    """Certificados X.509 emitidos a los usuarios.
+
+    `cert_pem` guarda el certificado firmado por la CA interna, enlazado a la clave
+    pública del usuario (`user_key_id`). El flag `revoked` permite invalidar el
+    certificado sin borrarlo para mantener trazabilidad.
+    """
+
     __tablename__ = "user_certs"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

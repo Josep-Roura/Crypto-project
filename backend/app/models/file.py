@@ -9,6 +9,14 @@ from app.db.base import Base
 
 
 class EncryptedFile(Base):
+    """Archivo cifrado y firmado asociado a un usuario.
+
+    Guardamos el ciphertext, IV y etiqueta de autenticación de AES-GCM, además de la
+    llave simétrica cifrada con RSA-OAEP (`encrypted_key`) y la firma opcional RSA-PSS
+    sobre el contenido. `encryption_algorithm` y `key_encryption_algorithm` sirven para
+    documentar qué algoritmos se usaron en cada registro.
+    """
+
     __tablename__ = "files"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

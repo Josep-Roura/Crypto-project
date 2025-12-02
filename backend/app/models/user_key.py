@@ -9,6 +9,14 @@ from app.db.base import Base
 
 
 class UserKey(Base):
+    """Par de claves RSA del usuario.
+
+    `public_key_pem` se guarda en claro para poder compartir, mientras que
+    `private_key_encrypted` contiene la clave privada protegida con AES-GCM derivado del
+    hash de la contraseña del usuario. Sirve como base para cifrar llaves de ficheros o
+    emitir certificados.
+    """
+
     __tablename__ = "user_keys"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

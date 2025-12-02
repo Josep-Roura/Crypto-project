@@ -1,4 +1,10 @@
-# tests/conftest.py
+"""
+Fixtures y bootstrap de entorno para los tests de la API.
+
+Aquí se prepara el `sys.path` para que `from app.main import app` funcione
+igual que en producción y se cargan variables de entorno mínimas para que
+las pruebas de autenticación y cifrado se inicien con claves conocidas.
+"""
 
 import os
 import sys
@@ -45,6 +51,10 @@ from app.main import app  # noqa: E402
 @pytest.fixture(scope="session")
 def client() -> TestClient:
     """
-    Cliente de pruebas compartido para toda la sesión de pytest.
+    Cliente HTTP compartido para simular peticiones contra la API.
+
+    La sesión de pytest mantiene vivo este cliente para reutilizar la
+    configuración de claves JWT y la conexión de base de datos sin tener
+    que reimportar la aplicación en cada test.
     """
     return TestClient(app)
