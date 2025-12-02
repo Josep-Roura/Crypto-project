@@ -7,10 +7,14 @@ from starlette.testclient import TestClient
 
 
 def _random_email() -> str:
+    """Genera un email único para no reusar cuentas entre casos."""
+
     return f"filetest_{uuid.uuid4().hex[:8]}@example.com"
 
 
 def _random_username() -> str:
+    """Devuelve un username aleatorio para el flujo de ficheros."""
+
     return f"fileuser_{uuid.uuid4().hex[:8]}"
 
 

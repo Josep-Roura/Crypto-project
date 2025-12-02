@@ -9,6 +9,14 @@ from app.db.base import Base
 
 
 class CACert(Base):
+    """Certificados y claves privadas de la infraestructura de CA interna.
+
+    `cert_pem` almacena el certificado X.509 (root o issuing) y
+    `private_key_encrypted` guarda la clave privada protegida con AES-GCM derivado del
+    secreto maestro de la aplicación. `is_root` indica si es la raíz autofirmada o una
+    subordinada firmada por `parent`.
+    """
+
     __tablename__ = "ca_certs"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

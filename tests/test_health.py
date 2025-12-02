@@ -5,10 +5,17 @@ from starlette.testclient import TestClient
 
 def test_health_endpoint(client: TestClient):
     """
-    Comprobar que /api/health NO revienta.
-    Si existe, debería devolver un JSON válido.
-    Si no existe (404), también lo aceptamos.
-    Lo único que no queremos ver es un 5xx.
+    Valida el endpoint `/api/health` como sonda de disponibilidad.
+
+    Entrada:
+    - `client`: fixture de `TestClient` que simula un consumidor HTTP.
+
+    Salida/Comprobaciones:
+    - Si la ruta existe, debe responder <500 y entregar un JSON parseable
+      que confirma que la API está viva.
+    - Si la ruta no está implementada, aceptamos 404 siempre que no haya
+      error de servidor, porque algunas instalaciones pueden desactivar
+      el check de salud.
     """
     resp = client.get("/api/health")
 

@@ -11,9 +11,13 @@ pwd_context = CryptContext(
 
 
 def hash_password(password: str) -> str:
-    """
-    Hashea la contraseña en texto plano usando pbkdf2_sha256.
-    Truncamos contraseñas absurdamente largas por seguridad / compat.
+    """Calcula el hash de la contraseña con PBKDF2-HMAC-SHA256.
+
+    Algoritmo: `pbkdf2_sha256` gestionado por Passlib, que aplica miles de iteraciones
+    y una sal aleatoria interna para cada llamada.
+    Entradas: contraseña en texto plano (se limita a 128 chars para evitar abusos).
+    Salidas: cadena de hash en formato Passlib lista para almacenar en la base de
+    datos sin guardar la contraseña real.
     """
     if len(password) > 128:
         password = password[:128]
@@ -21,11 +25,13 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """
-    Verifica una contraseña en texto plano contra el hash almacenado.
+    """Valida una contraseña frente a su hash PBKDF2.
 
-    Si el hash es de un esquema antiguo (por ejemplo bcrypt) que ya no soportamos,
-    Passlib lanza UnknownHashError → lo tratamos como contraseña inválida.
+    Algoritmo: comparación usando `pbkdf2_sha256` de Passlib, que incluye verificación
+    constante y manejo de la sal almacenada en el propio hash.
+    Entradas: contraseña en claro y hash previamente generado.
+    Salidas: `True` si coincide; `False` si el hash es inválido, antiguo o la clave no
+    corresponde.
     """
     if len(plain_password) > 128:
         plain_password = plain_password[:128]

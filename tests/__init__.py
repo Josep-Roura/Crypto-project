@@ -1,2 +1,7 @@
-# tests/__init__.py
-# Marca la carpeta tests como paquete para facilitar imports si hace falta.
+"""
+Inicializa el paquete de tests para que los imports relativos funcionen.
+
+Esta marca permite que pytest resuelva helpers comunes sin pelearse con
+las rutas del proyecto. No hay lógica adicional porque solo necesitamos
+que la carpeta se comporte como módulo.
+"""
