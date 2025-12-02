@@ -9,6 +9,13 @@ from app.db.base import Base
 
 
 class User(Base):
+    """Tabla de usuarios autenticados.
+
+    Cada usuario guarda su hash de contraseña (PBKDF2) y sirve como dueño de claves
+    RSA, certificados X.509 y archivos cifrados. Los timestamps permiten auditar
+    altas y modificaciones.
+    """
+
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

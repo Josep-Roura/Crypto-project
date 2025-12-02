@@ -6,10 +6,14 @@ from starlette.testclient import TestClient
 
 
 def _random_email() -> str:
+    """Email aleatorio para probar emisión de certificados sin colisiones."""
+
     return f"pkitest_{uuid.uuid4().hex[:8]}@example.com"
 
 
 def _random_username() -> str:
+    """Username aleatorio para aislar la identidad de prueba."""
+
     return f"pkiuser_{uuid.uuid4().hex[:8]}"
 
 

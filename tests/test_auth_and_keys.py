@@ -7,14 +7,20 @@ from starlette.testclient import TestClient
 
 
 def _random_email() -> str:
+    """Genera un email único para aislar pruebas de autenticación."""
+
     return f"test_{uuid.uuid4().hex[:8]}@example.com"
 
 
 def _random_username() -> str:
+    """Crea un username aleatorio evitando colisiones entre tests."""
+
     return f"user_{uuid.uuid4().hex[:8]}"
 
 
 def _register_user(client: TestClient, password: str = "testpassword123") -> Dict[str, str]:
+    """Registra un usuario de pruebas para validar login y claves."""
+
     email = _random_email()
     username = _random_username()
 
